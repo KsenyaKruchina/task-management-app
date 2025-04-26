@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import TasksService from '@services/tasks.service';
-import { Task, CreateTaskDto, UpdateTaskDto } from '@interfaces/task.interface';
+import TasksService from '../services/tasks.service';
+import { Task, CreateTaskDto, UpdateTaskDto } from '../interfaces/task.interface';
 
 class TasksController {
   private tasksService = new TasksService();
@@ -9,10 +9,14 @@ class TasksController {
     try {
       const tasks: Task[] = this.tasksService.findAll();
       res.status(200).json({ data: tasks, message: 'findAll' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Unknown error occurred' });
+      }
     }
-  };
+};
 
   public getById = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -25,8 +29,12 @@ class TasksController {
       }
 
       res.status(200).json({ data: task, message: 'findOne' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        res.status(500).json({ message:error.message});
+      } else {
+        res.status(500).json({ message: 'Unknown error occurred'});
+      }
     }
   };
 
@@ -35,8 +43,12 @@ class TasksController {
       const taskData: CreateTaskDto = req.body;
       const newTask: Task = this.tasksService.create(taskData);
       res.status(201).json({ data: newTask, message: 'created' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Unknown error occurred'});
+        }
     }
   };
 
@@ -52,8 +64,12 @@ class TasksController {
       }
 
       res.status(200).json({ data: updatedTask, message: 'updated' });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Unknown error occurred'});
+        }
     }
   };
 
@@ -68,8 +84,12 @@ class TasksController {
       }
 
       res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Unknown error occurred'});
+        }
     }
   };
 }

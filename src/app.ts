@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import TasksController from '@/controllers/tasks.controller';
-import errorMiddleware from '@middlewares/error.middleware';
-import taskValidation from '@middlewares/validation.moddleware'
+import TasksController from './controllers/tasks.controller';
+import errorMiddleware from './middlewares/error.middleware';
+import taskValidation from './middlewares/validation.middleware';
 
 class App {
   public app: express.Application;
@@ -29,9 +29,9 @@ class App {
 
     router.get('/tasks', this.tasksController.getAll);
     router.get('/tasks/:id', this.tasksController.getById);
-    router.post('/tasks', taskValidation.create, this.tasksController.create);
-    router.put('/tasks/:id', taskValidation.update, this.tasksController.update);
-    router.delete('/tasks/:id', this.tasksController.delete);
+    router.post('/tasks', [taskValidation.create, this.tasksController.create.bind(this.tasksController)]);
+    router.put('/tasks/:id', [taskValidation.update, this.tasksController.update.bind(this.tasksController)]);
+    router.delete('/tasks/:id', this.tasksController.delete.bind(this.tasksController));
 
     this.app.use('/', router);
   }

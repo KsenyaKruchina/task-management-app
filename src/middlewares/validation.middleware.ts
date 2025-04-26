@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
-import { CreateTaskDto, UpdateTaskDto } from '@interfaces/task.interface';
+import { Request, Response, NextFunction } from 'express';
+import { CreateTaskDto, UpdateTaskDto } from '../interfaces/task.interface';
 
 const taskValidation = {
-  create: (req: Request, res: Response, next: NextFunction) => {
+  create: (req: Request, res: Response, next: NextFunction): void => {
     const { description }: CreateTaskDto = req.body;
 
     if (!description || typeof description !== 'string' || description.trim() === '') {
-      return res.status(400).json({
+      res.status(400).json({
         status: 'error',
         message: 'Validation failed',
         errors: [
@@ -17,16 +17,17 @@ const taskValidation = {
           }
         ]
       });
+      return;
     }
 
     next();
   },
 
-  update: (req: Request, res: Response, next: NextFunction) => {
+  update: (req: Request, res: Response, next: NextFunction): void => {
     const { description, completed }: UpdateTaskDto = req.body;
 
     if (description !== undefined && (typeof description !== 'string' || description.trim() === '')) {
-      return res.status(400).json({
+      res.status(400).json({
         status: 'error',
         message: 'Validation failed',
         errors: [
@@ -37,10 +38,11 @@ const taskValidation = {
           }
         ]
       });
+      return;
     }
 
     if (completed !== undefined && typeof completed !== 'boolean') {
-      return res.status(400).json({
+      res.status(400).json({
         status: 'error',
         message: 'Validation failed',
         errors: [
@@ -51,6 +53,7 @@ const taskValidation = {
           }
         ]
       });
+      return;
     }
 
     next();
