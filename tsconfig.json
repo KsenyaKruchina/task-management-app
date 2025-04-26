@@ -11,13 +11,13 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@controllers/*": ["src/controllers/*"],
+      "@controllers/*": ["controllers/*"],
       "@services/*": ["src/services/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@utils/*": ["src/utils/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "controllers"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }
