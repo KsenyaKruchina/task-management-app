@@ -24,3 +24,6 @@ Restful Api реализован на Typescript c использованием 
 
 # Получение всех задач 
 - curl http://localhost:3000/tasks
+
+# Установка доп зависимостей для WebSocket
+- npm install ws @types/ws

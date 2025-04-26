@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import TasksService from '../services/tasks.service';
 import { Task, CreateTaskDto, UpdateTaskDto } from '../interfaces/task.interface';
+import { TaskEvent } from '../utils/websocket';
 
 class TasksController {
   private tasksService = new TasksService();
@@ -16,7 +17,7 @@ class TasksController {
         res.status(500).json({ message: 'Unknown error occurred' });
       }
     }
-};
+  };
 
   public getById = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -31,9 +32,9 @@ class TasksController {
       res.status(200).json({ data: task, message: 'findOne' });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        res.status(500).json({ message:error.message});
+        res.status(500).json({ message: error.message });
       } else {
-        res.status(500).json({ message: 'Unknown error occurred'});
+        res.status(500).json({ message: 'Unknown error occurred' });
       }
     }
   };
@@ -42,13 +43,20 @@ class TasksController {
     try {
       const taskData: CreateTaskDto = req.body;
       const newTask: Task = this.tasksService.create(taskData);
+      
+      const wss = req.app.get('wss');
+      wss.broadcast({
+        event: TaskEvent.CREATED,
+        payload: newTask
+      });
+
       res.status(201).json({ data: newTask, message: 'created' });
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        } else {
-            res.status(500).json({ message: 'Unknown error occurred'});
-        }
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Unknown error occurred' });
+      }
     }
   };
 
@@ -62,14 +70,19 @@ class TasksController {
         res.status(404).json({ message: 'Task not found' });
         return;
       }
+      const wss = req.app.get('wss');
+      wss.broadcast({
+        event: TaskEvent.UPDATED,
+        payload: updatedTask
+      });
 
       res.status(200).json({ data: updatedTask, message: 'updated' });
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        } else {
-            res.status(500).json({ message: 'Unknown error occurred'});
-        }
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Unknown error occurred' });
+      }
     }
   };
 
@@ -83,13 +96,19 @@ class TasksController {
         return;
       }
 
+      const wss = req.app.get('wss');
+      wss.broadcast({
+        event: TaskEvent.DELETED,
+        payload: { id: taskId }
+      });
+
       res.status(204).send();
     } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(500).json({ message: error.message });
-        } else {
-            res.status(500).json({ message: 'Unknown error occurred'});
-        }
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: 'Unknown error occurred' });
+      }
     }
   };
 }
